@@ -53,42 +53,62 @@ input, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px s
 </div>
 
 <script>
+// نمایش صفحه مورد نظر
 function showPage(page) {
-    document.getElementById("register").style.display = page === 'register' ? 'block' : 'none';
-    document.getElementById("comment").style.display = page === 'comment' ? 'block' : 'none';
-    document.getElementById("comments").style.display = page === 'comments' ? 'block' : 'none';
+    document.getElementById("register").style.display = (page === 'register') ? 'block' : 'none';
+    document.getElementById("comment").style.display = (page === 'comment') ? 'block' : 'none';
+    document.getElementById("comments").style.display = (page === 'comments') ? 'block' : 'none';
 }
 
+// ثبت نام کاربر
 function registerUser() {
-    let name = document.getElementById("name").value.trim();
-    let phone = document.getElementById("phone").value.trim();
-    if (name.length < 3 || phone.length < 5) { alert("اطلاعات را صحیح وارد کنید."); return; }
-    localStorage.setItem("user", JSON.stringify({name, phone}));
+    var userName = document.getElementById("name").value.trim();
+    var userPhone = document.getElementById("phone").value.trim();
+    if (userName.length < 3 || userPhone.length < 5) {
+        alert("اطلاعات را صحیح وارد کنید.");
+        return;
+    }
+    localStorage.setItem("user", JSON.stringify({name: userName, phone: userPhone}));
     alert("ثبت‌نام موفقیت‌آمیز بود!");
 }
 
+// ثبت نظر
 function saveComment() {
-    let user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!user.name) { alert("لطفاً اول ثبت‌نام کنید."); return; }
-    let text = document.getElementById("commentText").value.trim();
-    if (text.length < 2) { alert("نظر خیلی کوتاه است!"); return; }
-    let comments = JSON.parse(localStorage.getItem("comments") || "[]");
-    comments.push({name: user.name, text});
+    var user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!user.name) {
+        alert("لطفاً اول ثبت‌نام کنید.");
+        return;
+    }
+    var text = document.getElementById("commentText").value.trim();
+    if (text.length < 2) {
+        alert("نظر خیلی کوتاه است!");
+        return;
+    }
+    var comments = JSON.parse(localStorage.getItem("comments") || "[]");
+    if (!Array.isArray(comments)) comments = [];
+    comments.push({name: user.name, text: text});
     localStorage.setItem("comments", JSON.stringify(comments));
     alert("نظر ثبت شد!");
     document.getElementById("commentText").value = "";
     showAllComments();
 }
 
+// نمایش همه نظرات
 function showAllComments() {
-    let comments = JSON.parse(localStorage.getItem("comments") || "[]");
-    let box = document.getElementById("commentsList");
+    var comments = JSON.parse(localStorage.getItem("comments") || "[]");
+    if (!Array.isArray(comments)) comments = [];
+    var box = document.getElementById("commentsList");
     box.innerHTML = "";
-    comments.forEach(c => {
-        box.innerHTML += <div class="comment-item"><b>${c.name}</b><br>${c.text}</div>;
-    });
+    for (var i = 0; i < comments.length; i++) {
+        var c = comments[i];
+        box.innerHTML += '<div class="comment-item"><b>' + c.name + '</b><br>' + c.text + '</div>';
+    }
 }
-window.onload = function() { showAllComments(); };
+
+// اجرای اولیه
+window.onload = function() {
+    showAllComments();
+};
 </script>
 
 </body>
